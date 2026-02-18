@@ -1,7 +1,11 @@
 VENV=venv
+VENV_PATH=""
+
+ifeq ($(OS), Windows_NT)
+	PYTHON=py
+else
+	PYTHON=python
+endif
 
 init: ${VENV}
-	source venv/bin/activate && pip install -r requirements.txt
 
-${VENV}:
-	python -m venv ${VENV}
