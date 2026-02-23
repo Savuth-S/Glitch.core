@@ -1,6 +1,6 @@
 [project]
 requires-python = ">=3.14"
-dependencies = ["pillow"]
+dependencies = ["pillow>=12.1.1"]
 
 name = "glitch-core"
 version = "0.0.2"
@@ -9,4 +9,9 @@ license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 
     [project.scripts]
-    glitch-core = "glitch-core.__main__:main"
+    glitch-core = "glitch_core.__main__:main"
+
+    [project.optional-dependencies]
+    dev = ["pyinstaller>=6.19.0",
+            "bandit>=1.9.3",
+            "pytest>=9.0.2"]
