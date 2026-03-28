@@ -10,14 +10,22 @@ You should have received a copy of the GNU Affero General Public License along w
 '''
 import sys
 import logging
+import tkinter
+
+#TODO: setup properly global singleton
+logger = logging.getLogger(__name__)
 
 def main() ->None:
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG,
+                        format="[%(levelname)s] (%(threadName)s|%(taskName)s)(%(thread)d)(%(relativeCreated)03d) [%(module)s][%(lineno)d] %(message)s")
+    logger.info("=========")
+    logger.info(f"---{sys._getframe().f_code.co_name}");
 
-    print("running")
-    logger.debug("test")
-
+    tkinter.Tk()
+    tkinter.Label(text="running").pack()
+    input()
+    logger.info(f"---Exit {sys._getframe().f_code.co_name}");
+    logger.info("=========\n");
 
 if __name__ == "__main__":
     main()
