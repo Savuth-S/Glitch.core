@@ -11,7 +11,7 @@ license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 
     [project.scripts]
-    glitch-core = "glitch_core.__main__:main"
+    glitch-core = "glitch_core.__main__:VMain"
 
     [project.optional-dependencies]
     dev = ["pyinstaller>=6.19.0",

@@ -7,7 +7,7 @@ Q := @# OFF
 
 # ===MULTIPLATFORM SETUP===
 ifeq ($(OS),Windows_NT)# Shell commands setup
-RM_CMD := rmdir /S /Q
+RM_CMD := del /Q /S
 else
 RM_CMD := rm -r
 endif
@@ -37,7 +37,7 @@ update:
 	$Q$(UV) sync --upgrade
 
 run:
-	$Q$(UV) run $(NAME) --locked
+	$Q$(UV) run --locked $(NAME)
 	
 clean:
 	$Q$(RM_CMD) dist/
