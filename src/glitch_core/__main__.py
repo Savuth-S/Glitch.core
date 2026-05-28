@@ -9,43 +9,19 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 '''
 import sys
-import logging
 import argparse
 import tkinter
-from logging import handlers
+import logging
 from datetime import datetime
 
-from . import __version__, g_lgr
+from . import g_wrpLogger, __version__, Wrapper
 
-
-hdlBuffer = handlers.MemoryHandler(capacity=1, flushOnClose=False)
-
-def VCrashHandler(tpException, exception, traceback) -> None:
-    global hdlBuffer
-
-    g_lgr.critical(f"Uncaught exception: {exception}", exc_info=(exception))
-
-    hdlStdout = logging.StreamHandler()
-    hdlStdout.setFormatter(logging.Formatter("[%(levelname)s] (%(threadName)s|%(taskName)s)(%(thread)d)(%(relativeCreated)03d) [%(module)s][%(lineno)d] %(message)s"))
-
-    hdlBuffer.setTarget(hdlStdout)
-    hdlBuffer.flush()
 
 def VMain() -> None:
-    #TODO: move to logger class
-    sys.excepthook = VCrashHandler
+    # g_wrpLogger.VSetStdOutLevel(logging.CRITICAL)
 
-    fmt = logging.Formatter("[%(levelname)s] (%(threadName)s|%(taskName)s)(%(thread)d)(%(relativeCreated)03d) [%(module)s][%(lineno)d] %(message)s")
-    logging.basicConfig(format=fmt._fmt)
-
-    hdlBuffer.setFormatter(fmt)
-    g_lgr.addHandler(hdlBuffer)
-
-    g_lgr.setLevel(logging.DEBUG)
-
-    g_lgr.info("=========")
-    g_lgr.info(f"---{sys._getframe().f_code.co_name}")
-    g_lgr.info(g_lgr.handlers)
+    g_wrpLogger.info("=========")
+    g_wrpLogger.info(f"---{sys._getframe().f_code.co_name}")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-v","--version", action="version", version=__version__)
@@ -54,10 +30,8 @@ def VMain() -> None:
     tkinter.Tk()
     tkinter.Label(text=f"{__version__}").pack()
 
-    var = 10/0
-
-    g_lgr.info(f"---Exit {sys._getframe().f_code.co_name}")
-    g_lgr.info("=========\n")
+    g_wrpLogger.info(f"---Exit {sys._getframe().f_code.co_name}")
+    g_wrpLogger.info("=========\n")
 
 
 # MODULE CALL ENTRY POINT ONLY, NO LOGIC WILL GET RUN ON SCRIPT

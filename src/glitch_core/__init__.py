@@ -1,6 +1,6 @@
 import importlib.metadata
-import logging
+from . import Wrapper
 
 __version__  = importlib.metadata.version(__package__)
 
-g_lgr = logging.getLogger(__name__)
+g_wrpLogger = Wrapper.Logger()
