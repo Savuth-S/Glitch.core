@@ -36,3 +36,4 @@ venv
 venv.bak/
 
 uv.lock
+crashlog_*.log

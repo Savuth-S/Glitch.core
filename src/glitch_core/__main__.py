@@ -11,17 +11,15 @@ You should have received a copy of the GNU Affero General Public License along w
 import sys
 import argparse
 import tkinter
-import logging
-from datetime import datetime
 
-from . import g_wrpLogger, __version__, Wrapper
+from . import g_lgr, __version__
 
 
 def VMain() -> None:
     # g_wrpLogger.VSetStdOutLevel(logging.CRITICAL)
 
-    g_wrpLogger.info("=========")
-    g_wrpLogger.info(f"---{sys._getframe().f_code.co_name}")
+    g_lgr.info("=========")
+    g_lgr.info(f"---{sys._getframe().f_code.co_name}")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-v","--version", action="version", version=__version__)
@@ -30,8 +28,8 @@ def VMain() -> None:
     tkinter.Tk()
     tkinter.Label(text=f"{__version__}").pack()
 
-    g_wrpLogger.info(f"---Exit {sys._getframe().f_code.co_name}")
-    g_wrpLogger.info("=========\n")
+    g_lgr.info(f"---Exit {sys._getframe().f_code.co_name}")
+    g_lgr.info("=========")
 
 
 # MODULE CALL ENTRY POINT ONLY, NO LOGIC WILL GET RUN ON SCRIPT
