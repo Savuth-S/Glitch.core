@@ -9,50 +9,59 @@ class Logger:
     self = None #Static globally shared between instances var
 
     @staticmethod
-    def VCrashHandler(clsException, excSelf, tcb) -> None:
-        lgr = Logger() 
-        lgr.fatal(f"Uncaught exception: {excSelf}", exc_info=(excSelf))
-
-        hdlFile = logging.FileHandler(f"crashlog_{datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')}.log")
-        hdlFile.setFormatter(lgr.__m_fmtHandlers)
-
-        lgr.__m_hdlMemBuffer.setTarget(hdlFile)
-        lgr.__m_hdlMemBuffer.flush()
-        hdlFile.close()
-
-    def __new__(clsLogger) -> Logger:
-        return clsLogger.self if clsLogger.self is not None else super().__new__(clsLogger)
-
-    def __init__(self, enuLevel = logging.DEBUG) -> None:
-        if self.self is not None:
+    def VCrashHandler(xtpCrash, xCrash, tbCrash) -> None:
+        if xtpCrash is KeyboardInterrupt:
             return
-        Logger.self = self  #Fix for running multiple times constructor after singleton is made
+
+        lgr = Logger() 
+        lgr.fatal(f"Uncaught exception: {xCrash}", exc_info=(xtpCrash, xCrash, tbCrash))
+
+        lgCrashDump = None
+        try:
+            lgCrashDump = logging.FileHandler(f"crashlog_{datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')}.log")
+            lgCrashDump.setFormatter(lgr.__m_fmtLog)
+
+            lgr.__m_bufLogHistory.setTarget(lgCrashDump)
+            lgr.__m_bufLogHistory.flush()
+        finally:
+            if lgCrashDump is not None:
+                lgCrashDump.close()
+
+    def __new__(clsSelf) -> Logger:
+        return clsSelf.self if clsSelf.self is not None else super().__new__(clsSelf)
+
+    def __init__(self, lvlLog = logging.DEBUG) -> None:
+        if type(self).self is not None:
+            return
+        type(self).self = self  # Fix for running multiple times constructor after singleton is made
 
         self.__m_lgr = logging.getLogger(__name__)
-        self.__m_lgr.setLevel(enuLevel)
+        self.__m_lgr.setLevel(lvlLog)
 
-        self.__m_fmtHandlers = logging.Formatter("[%(levelname)s] (%(threadName)s|%(taskName)s)(%(thread)d)(%(relativeCreated)03d) [%(module)s][%(lineno)d] %(message)s")
-        self.__VSetUpHandlers()
+        self.__m_fmtLog = logging.Formatter("[%(levelname)s] (%(threadName)s|%(taskName)s)(%(thread)d)(%(relativeCreated)03d) [%(module)s][%(lineno)d] %(message)s")
+        if not self.__m_lgr.handlers:
+            self.__VSetUpHandlers()
 
+        # Logger is ready for crash handling, must be after initialization
         sys.excepthook = self.VCrashHandler
         tkinter.Tk.report_callback_exception = self.VCrashHandler
 
     def __VSetUpHandlers(self) -> None:
-        self.__m_hdlStdOut = logging.StreamHandler(sys.stdout)
-        self.__m_hdlStdOut.setFormatter(self.__m_fmtHandlers)
-        self.__m_lgr.addHandler(self.__m_hdlStdOut)
+        self.__m_stLogOutput = logging.StreamHandler(sys.stdout)
+        self.__m_stLogOutput.setFormatter(self.__m_fmtLog)
+        self.__m_lgr.addHandler(self.__m_stLogOutput)
 
-        self.__m_hdlMemBuffer = handlers.MemoryHandler(capacity=1,
+        self.__m_bufLogHistory = handlers.MemoryHandler(capacity=10,
                                                        flushLevel=logging.CRITICAL+1,
                                                        flushOnClose=False)
-        self.__m_hdlMemBuffer.setFormatter(self.__m_fmtHandlers)
-        self.__m_lgr.addHandler(self.__m_hdlMemBuffer)
+        self.__m_bufLogHistory.setFormatter(self.__m_fmtLog)
+        self.__m_lgr.addHandler(self.__m_bufLogHistory)
 
-    def VSetLoggerLevel(self, lvlLogger) -> None:
-         self.__m_lgr.setLevel(lvlLogger)
+    def VSetLoggerLevel(self, lvlLog) -> None:
+         self.__m_lgr.setLevel(lvlLog)
 
-    def VSetStdOutLevel(self, lvlLogger) -> None:
-         self.__m_hdlStdOut.setLevel(lvlLogger)
+    def VSetStdOutLevel(self, lvlLog) -> None:
+         self.__m_stLogOutput.setLevel(lvlLog)
 
     def debug(self, msg, *args, **kwargs) -> None:
          self.__m_lgr.debug(msg, *args, stacklevel=2, **kwargs)
