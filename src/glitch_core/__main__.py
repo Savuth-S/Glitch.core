@@ -16,7 +16,7 @@ from . import g_lgr, __version__
 
 
 def VMain() -> None:
-    # g_wrpLogger.VSetStdOutLevel(logging.CRITICAL)
+    # g_lgr.VSetStdOutLevel(logging.CRITICAL)
 
     g_lgr.info("=========")
     g_lgr.info(f"---{sys._getframe().f_code.co_name}")

@@ -6,7 +6,7 @@ from logging import handlers
 
 
 class Logger:
-    self = None #Static globally shared between instances var
+    __self = None #Static globally shared between instances var
 
     @staticmethod
     def VCrashHandler(xtpCrash, xCrash, tbCrash) -> None:
@@ -27,13 +27,13 @@ class Logger:
             if lgCrashDump is not None:
                 lgCrashDump.close()
 
-    def __new__(clsSelf) -> Logger:
-        return clsSelf.self if clsSelf.self is not None else super().__new__(clsSelf)
+    def __new__(tpSelf) -> Logger:
+        return tpSelf.__self if tpSelf.__self is not None else super().__new__(tpSelf)
 
     def __init__(self, lvlLog = logging.DEBUG) -> None:
-        if type(self).self is not None:
+        if type(self).__self is not None:
             return
-        type(self).self = self  # Fix for running multiple times constructor after singleton is made
+        type(self).__self = self  # Fix for running multiple times constructor after singleton is made
 
         self.__m_lgr = logging.getLogger(__name__)
         self.__m_lgr.setLevel(lvlLog)
